@@ -1,680 +1,469 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StackShorts — записуєш екран, отримуєш готовий Shorts</title>
-<meta name="description" content="StackShorts перетворює запис екрану на вертикальний Shorts з читабельним кодом і субтитрами. Все на твоєму ПК.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nimvel — Your private, on-device voice journal</title>
+<meta name="description" content="Nimvel is a private, on-device voice journal. Capture quick voice notes on the go — Nimvel transcribes them on your device and arranges a tidy summary every evening." />
+<meta property="og:title" content="Nimvel — private, on-device voice journal" />
+<meta property="og:description" content="Capture quick voice notes on the go — Nimvel transcribes them on your device and arranges a tidy summary every evening. Fully offline." />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='none' stroke='%230E5A52' stroke-width='2.5'/%3E%3Cpath d='M11 20v-4M16 20v-8M21 20v-6' stroke='%230E5A52' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root {
-    --bg: #0A0E14;
-    --bg-elevated: #0F1520;
-    --bg-card: #121927;
-    --border: #1C2433;
-    --text: #F5F7FA;
-    --text-dim: #8A94A6;
-    --text-faint: #5A6472;
-    --cyan: #00E5FF;
-    --cyan-dim: #00E5FF66;
-    --cyan-bg: #00E5FF12;
-  }
+/* ===== Design tokens ===== */
+:root, [data-theme="light"] {
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  --text-2xl: clamp(1.9rem, 1.15rem + 2.4vw, 3.4rem);
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+  --space-12: 3rem; --space-16: 4rem; --space-20: 5rem; --space-24: 6rem;
 
-  html { scroll-behavior: smooth; }
+  --color-bg: #f6f4ee;
+  --color-surface: #fdfcf8;
+  --color-surface-2: #efece3;
+  --color-border: #e3dfd4;
+  --color-divider: #eae6db;
+  --color-text: #1f1e1a;
+  --color-text-muted: #6c6960;
+  --color-text-faint: #a5a199;
+  --color-text-inverse: #f6f4ee;
+  --color-primary: #0e5a52;
+  --color-primary-hover: #0a463f;
+  --color-primary-tint: #dfe9e5;
+  --color-error: #a1354a;
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
+  --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem; --radius-full: 9999px;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-lg: 0 12px 40px rgba(31, 30, 26, 0.09);
 
-  .mono { font-family: 'JetBrains Mono', monospace; }
+  --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-body: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
 
-  a { color: inherit; text-decoration: none; }
+[data-theme="dark"] {
+  --color-bg: #131311;
+  --color-surface: #1b1a18;
+  --color-surface-2: #23221f;
+  --color-border: #2e2c28;
+  --color-divider: #292724;
+  --color-text: #e9e7e1;
+  --color-text-muted: #99968d;
+  --color-text-faint: #605d57;
+  --color-text-inverse: #101412;
+  --color-primary: #5fb3a9;
+  --color-primary-hover: #79c1b9;
+  --color-primary-tint: #1e2c2a;
+  --color-error: #dd7d90;
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
 
-  /* ---------- Background grid texture ---------- */
-  .grid-bg {
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--border) 1px, transparent 1px),
-      linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 64px 64px;
-    opacity: 0.35;
-    mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 30%, transparent 75%);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ===== Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; scroll-behavior: smooth; scroll-padding-top: var(--space-16); }
+body { min-height: 100dvh; line-height: 1.6; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text); background-color: var(--color-bg); }
+img, svg { display: block; max-width: 100%; height: auto; }
+input, button { font: inherit; color: inherit; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.15; font-family: var(--font-display); font-weight: 500; }
+p { text-wrap: pretty; }
+::selection { background: var(--color-primary-tint); color: var(--color-text); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: var(--radius-sm); }
+button { cursor: pointer; background: none; border: none; }
+a, button, [role="button"], input { transition: color var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } }
 
-  .container {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px;
-    position: relative;
-    z-index: 1;
-  }
+/* ===== Layout ===== */
+.wrap { width: 100%; max-width: 1080px; margin-inline: auto; padding-inline: clamp(var(--space-5), 6vw, var(--space-12)); }
 
-  /* ---------- Nav ---------- */
-  nav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    backdrop-filter: blur(12px);
-    background: rgba(10,14,20,0.75);
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-inner {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 18px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo-wrap { display: flex; align-items: center; gap: 10px; }
-  .logo-wrap svg { height: 28px; width: auto; }
-  .logo-text { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 18px; }
-  .logo-text .accent { color: var(--cyan); }
-  .nav-cta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    padding: 8px 16px;
-    border: 1px solid var(--cyan-dim);
-    border-radius: 6px;
-    color: var(--cyan);
-    transition: all 0.2s ease;
-  }
-  .nav-cta:hover { background: var(--cyan-bg); border-color: var(--cyan); }
+/* ===== Header ===== */
+.header { position: sticky; top: 0; z-index: 50; background: color-mix(in oklab, var(--color-bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid transparent; }
+.header.scrolled { border-bottom-color: var(--color-divider); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; gap: var(--space-4); }
+.brand { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-display); font-weight: 600; font-size: var(--text-lg); letter-spacing: -0.01em; text-decoration: none; color: var(--color-text); flex-shrink: 0; }
+.brand svg { width: 26px; height: 26px; }
+.header-actions { display: flex; align-items: center; gap: var(--space-3); }
 
-  /* ---------- Hero ---------- */
-  .hero {
-    padding: 100px 0 80px;
-    text-align: center;
-  }
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--cyan);
-    background: var(--cyan-bg);
-    border: 1px solid var(--cyan-dim);
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 32px;
-  }
-  .eyebrow::before {
-    content: '';
-    width: 6px; height: 6px;
-    background: var(--cyan);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--cyan);
-  }
-  h1 {
-    font-size: clamp(36px, 6vw, 64px);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.08;
-    margin-bottom: 24px;
-  }
-  h1 .accent { color: var(--cyan); }
-  .hero-sub {
-    font-size: clamp(16px, 2vw, 19px);
-    color: var(--text-dim);
-    max-width: 620px;
-    margin: 0 auto 40px;
-  }
-  .hero-sub code {
-    font-family: 'JetBrains Mono', monospace;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 2px 8px;
-    border-radius: 4px;
-    color: var(--text);
-    font-size: 0.9em;
-  }
-  .hero-actions {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 64px;
-  }
-  .btn-primary {
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 15px;
-    padding: 14px 28px;
-    background: var(--cyan);
-    color: #00141A;
-    border-radius: 8px;
-    box-shadow: 0 0 30px var(--cyan-dim);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px var(--cyan-dim); }
-  .btn-secondary {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    padding: 14px 28px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-dim);
-    transition: all 0.15s ease;
-  }
-  .btn-secondary:hover { border-color: var(--text-faint); color: var(--text); }
+/* Language switch */
+.lang { display: inline-flex; align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-full); padding: 2px; gap: 2px; }
+.lang button { padding: 5px var(--space-3); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-muted); line-height: 1.2; }
+.lang button:hover { color: var(--color-text); }
+.lang button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-text-inverse); }
 
-  /* ---------- Pipeline visual ---------- */
-  .pipeline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    flex-wrap: wrap;
-    max-width: 760px;
-    margin: 0 auto;
-  }
-  .stage {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    text-align: left;
-    min-width: 150px;
-  }
-  .stage .label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-faint);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .stage .value {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--text);
-  }
-  .stage.active { border-color: var(--cyan-dim); box-shadow: 0 0 24px -8px var(--cyan-dim); }
-  .stage.active .value { color: var(--cyan); }
-  .arrow {
-    color: var(--text-faint);
-    font-size: 20px;
-    padding: 0 16px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+.icon-btn { display: grid; place-items: center; width: 38px; height: 38px; border-radius: var(--radius-full); color: var(--color-text-muted); }
+.icon-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+.ghost-btn { padding: var(--space-2) var(--space-4); border-radius: var(--radius-full); border: 1px solid var(--color-border); font-size: var(--text-sm); font-weight: 500; color: var(--color-text); text-decoration: none; white-space: nowrap; }
+.ghost-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
 
-  /* ---------- Section shared ---------- */
-  section { padding: 80px 0; }
-  .section-head { text-align: center; max-width: 640px; margin: 0 auto 56px; }
-  .section-eyebrow {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--cyan);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-  .section-head h2 {
-    font-size: clamp(26px, 4vw, 38px);
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-  .section-head p { color: var(--text-dim); margin-top: 14px; font-size: 16px; }
+/* ===== Hero ===== */
+.hero { padding-block: clamp(var(--space-8), 5vw, var(--space-12)) clamp(var(--space-4), 3vw, var(--space-6)); text-align: center; }
+.kicker { font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-primary); margin-bottom: var(--space-3); }
+.hero h1 { font-size: clamp(1.6rem, 1rem + 2vw, 2.5rem); letter-spacing: -0.02em; max-width: 26ch; margin-inline: auto; margin-bottom: var(--space-4); }
+.hero .subtitle { font-size: var(--text-lg); line-height: 1.5; color: var(--color-text-muted); max-width: 46ch; margin-inline: auto; }
+.hero .trust { margin-top: var(--space-3); font-size: var(--text-base); color: var(--color-text-muted); }
 
-  /* ---------- Problem cards ---------- */
-  .problem-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-  }
-  .problem-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-  }
-  .problem-card h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: var(--text);
-  }
-  .problem-card p { color: var(--text-dim); font-size: 14.5px; }
+/* ===== Waitlist / survey ===== */
+.waitlist { padding-block: var(--space-4) clamp(var(--space-16), 10vw, var(--space-24)); }
+.card { max-width: 560px; margin-inline: auto; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: clamp(var(--space-4), 3vw, var(--space-5)); box-shadow: var(--shadow-lg); }
+.card h2 { font-size: var(--text-xl); letter-spacing: -0.01em; margin-bottom: var(--space-2); }
+.card .lede { font-size: var(--text-base); color: var(--color-text-muted); margin-bottom: var(--space-4); }
+.field { margin-bottom: var(--space-3); border: 0; }
+.label { display: block; font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-2); padding: 0; }
+.input { width: 100%; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg); font-size: var(--text-base); }
+.input::placeholder { color: var(--color-text-faint); }
+.input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 18%, transparent); }
+.input[aria-invalid="true"] { border-color: var(--color-error); }
+.err { display: none; margin-top: var(--space-2); font-size: var(--text-sm); color: var(--color-error); }
+.err.show { display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip { position: relative; display: inline-flex; align-items: center; padding: 0.4rem 0.9rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); font-size: var(--text-sm); cursor: pointer; color: var(--color-text-muted); }
+.chip:hover { border-color: var(--color-primary); color: var(--color-text); }
+.chip input { position: absolute; opacity: 0; pointer-events: none; }
+.chip:has(input:checked) { background: var(--color-primary-tint); border-color: var(--color-primary); color: var(--color-primary); font-weight: 500; }
+.chip:has(input:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.cta { width: 100%; padding: var(--space-3) var(--space-5); border-radius: var(--radius-full); background: var(--color-primary); color: var(--color-text-inverse); font-size: var(--text-base); font-weight: 600; }
+.cta:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+.cta:disabled { opacity: 0.6; cursor: default; transform: none; }
+.success { text-align: center; }
+.success .big { font-family: var(--font-display); font-size: var(--text-xl); color: var(--color-primary); margin-bottom: var(--space-2); }
+.success .small { color: var(--color-text-muted); font-size: var(--text-base); }
+.form-note { margin-top: var(--space-5); font-size: var(--text-xs); color: var(--color-text-faint); text-align: center; }
 
-  /* ---------- Modes ---------- */
-  .modes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 18px;
-  }
-  .mode-card {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
-  }
-  .mode-card .mode-tag {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-faint);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-  .mode-card h3 { font-size: 18px; margin-bottom: 8px; }
-  .mode-card p { font-size: 14px; color: var(--text-dim); }
+/* ===== How it works ===== */
+.how { padding-block: var(--space-4) clamp(var(--space-16), 10vw, var(--space-24)); }
+.how h2 { font-size: var(--text-xl); text-align: center; margin-bottom: var(--space-10); }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-8); }
+.step { border-top: 1px solid var(--color-border); padding-top: var(--space-5); }
+.step .num { font-size: var(--text-lg); font-weight: 600; letter-spacing: 0.02em; color: var(--color-primary); display: block; margin-bottom: var(--space-3); }
+.step h3 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+.step p { font-size: var(--text-base); color: var(--color-text); max-width: 36ch; }
 
-  /* ---------- Honesty block ---------- */
-  .honest {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 48px;
-  }
-  .honest-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-  }
-  @media (max-width: 720px) { .honest-grid { grid-template-columns: 1fr; } }
-  .honest h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .honest .not h3 { color: #FF6B6B; }
-  .honest .yes h3 { color: var(--cyan); }
-  .honest ul { list-style: none; }
-  .honest li {
-    font-size: 15px;
-    color: var(--text-dim);
-    padding: 8px 0 8px 20px;
-    position: relative;
-    border-bottom: 1px solid var(--border);
-  }
-  .honest li:last-child { border-bottom: none; }
-  .honest .not li::before { content: '×'; position: absolute; left: 0; color: #FF6B6B; font-weight: 700; }
-  .honest .yes li::before { content: '✓'; position: absolute; left: 0; color: var(--cyan); font-weight: 700; }
+/* ===== Footer ===== */
+.footer { border-top: 1px solid var(--color-divider); padding-block: var(--space-8); }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; }
+.footer .brand { font-size: var(--text-base); }
+.footer .brand svg { width: 20px; height: 20px; }
+.footer p { font-size: var(--text-sm); color: var(--color-text-muted); }
+.footer a { color: var(--color-text-muted); text-decoration: underline; text-underline-offset: 2px; }
+.footer a:hover { color: var(--color-primary); }
 
-  /* ---------- Quote ---------- */
-  .quote-block {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 48px 24px;
-  }
-  .quote-block blockquote {
-    font-size: clamp(20px, 3vw, 28px);
-    font-weight: 500;
-    line-height: 1.5;
-    color: var(--text);
-  }
-  .quote-block .by {
-    margin-top: 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    color: var(--text-faint);
-  }
-
-  /* ---------- CTA & Form ---------- */
-  .cta-section {
-    text-align: center;
-    border-top: 1px solid var(--border);
-  }
-  .cta-section h2 { font-size: clamp(28px, 4vw, 42px); margin-bottom: 18px; }
-  .cta-section p { color: var(--text-dim); margin-bottom: 36px; }
-
-  .email-form {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    max-width: 460px;
-    margin: 0 auto;
-  }
-  .email-form input {
-    flex: 1;
-    min-width: 220px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 13px 16px;
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-  }
-  .email-form input:focus { outline: none; border-color: var(--cyan); }
-  .email-form input::placeholder { color: var(--text-faint); }
-
-  /* ---------- Modal Window ---------- */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 14, 20, 0.85);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    padding: 24px;
-  }
-  .modal-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .modal-content {
-    background: var(--bg-card);
-    border: 1px solid var(--cyan-dim);
-    box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
-    border-radius: 16px;
-    padding: 40px 32px;
-    max-width: 440px;
-    width: 100%;
-    text-align: center;
-    transform: scale(0.9) translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .modal-overlay.active .modal-content {
-    transform: scale(1) translateY(0);
-  }
-  .modal-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--cyan-bg);
-    border: 1px solid var(--cyan-dim);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 20px;
-    color: var(--cyan);
-    font-size: 20px;
-  }
-  .modal-content h3 {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 20px;
-    margin-bottom: 12px;
-    color: var(--text);
-  }
-  .modal-content p {
-    color: var(--text-dim);
-    font-size: 14px;
-    margin-bottom: 28px;
-    line-height: 1.5;
-  }
-
-  /* ---------- Footer ---------- */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 32px 0;
-    text-align: center;
-  }
-  footer p { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-faint); }
-
-  /* ---------- Reveal animation ---------- */
-  .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; transition: none; }
-    .modal-overlay, .modal-content { transition: none; }
-    html { scroll-behavior: auto; }
-  }
+/* ===== Responsive ===== */
+@media (max-width: 760px) {
+  .steps { grid-template-columns: 1fr; gap: var(--space-6); }
+  .ghost-btn { display: none; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
 </style>
 </head>
 <body>
-
-<div class="grid-bg"></div>
-
-<nav>
-  <div class="nav-inner">
-    <div class="logo-wrap">
-      <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="8" width="30" height="5" rx="2.5" fill="#00E5FF" opacity="0.35"/>
-        <rect x="4" y="17" width="20" height="5" rx="2.5" fill="#00E5FF" opacity="0.5"/>
-        <rect x="10" y="26" width="26" height="20" rx="6" fill="none" stroke="#00E5FF" stroke-width="3"/>
-        <path d="M21 33 L21 39 L27 36 Z" fill="#00E5FF"/>
+<header class="header" id="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#" aria-label="Nimvel">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <rect x="2" y="2" width="28" height="28" rx="8" />
+        <path d="M11 20v-4M16 20v-8M21 20v-6" stroke-linecap="round" />
       </svg>
-      <span class="logo-text">Stack<span class="accent">Shorts</span></span>
-    </div>
-    <a href="#waitlist" class="nav-cta">приєднатись до валідації</a>
-  </div>
-</nav>
-
-<header class="hero">
-  <div class="container">
-    <div class="eyebrow">в розробці · валідація триває</div>
-    <h1>Записуєш екран — <br>отримуєш готовий <span class="accent">Shorts</span></h1>
-    <p class="hero-sub">
-      StackShorts перетворює запис екрану на читабельний вертикальний відос
-      з субтитрами. Все в одному місці, на твоєму ПК — без <code>OBS</code>,
-      без <code>CapCut</code>, без зайвих кроків.
-    </p>
-    <div class="hero-actions">
-      <a href="#waitlist" class="btn-primary">залишити пошту</a>
-      <a href="#how" class="btn-secondary">як це працює →</a>
-    </div>
-
-    <div class="pipeline reveal" id="pipeline">
-      <div class="stage">
-        <div class="label">01 — запис</div>
-        <div class="value">16:9, твій код</div>
+      Nimvel
+    </a>
+    <div class="header-actions">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="uk" aria-pressed="false">УКР</button>
+        <button type="button" data-lang="en" aria-pressed="true">ENG</button>
       </div>
-      <div class="arrow">→</div>
-      <div class="stage">
-        <div class="label">02 — обробка</div>
-        <div class="value">zoom + субтитри</div>
-      </div>
-      <div class="arrow">→</div>
-      <div class="stage active">
-        <div class="label">03 — результат</div>
-        <div class="value">9:16 Shorts</div>
-      </div>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch theme"></button>
+      <a class="ghost-btn" href="#waitlist" data-i18n="nav_cta">Join the waitlist</a>
     </div>
   </div>
 </header>
 
-<section id="problem">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">проблема</div>
-      <h2>Біль — не монтаж. Біль — марнування часу</h2>
-      <p>«Я зробив запис. Але код дрібний, вертикального формату немає, а відкривати CapCut чи OBS просто лінь.»</p>
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="kicker" data-i18n="kicker">Private voice journal · Coming soon</p>
+      <h1 data-i18n="h1">Capture thoughts by voice. Nimvel shapes them into a clean journal.</h1>
+      <p class="subtitle" data-i18n="sub">Leave quick voice notes on the go — they're transcribed on your device and arranged into a tidy summary every evening.</p>
+      <p class="trust" data-i18n="trust">100% on your device · No cloud · No account · Your words stay yours</p>
     </div>
-    <div class="problem-grid reveal">
-      <div class="problem-card">
-        <h3>Дрібний код</h3>
-        <p>На екрані смартфона код із звичайного запису 16:9 стає нечитабельним дріб'язком.</p>
-      </div>
-      <div class="problem-card">
-        <h3>Зайві інструменти</h3>
-        <p>Потрібно тримати OBS для запису, CapCut для кадрування та окремі сервіси для субтитрів.</p>
-      </div>
-      <div class="problem-card">
-        <h3>Години на рутину</h3>
-        <p>Замість написання коду доводиться вручну рухати кроп, налаштовувати розмиття фону та таймінги.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<section id="how">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">режими запису</div>
-      <h2>Вибір стилю — як вибір режиму камери</h2>
-      <p>Один тап перед записом. Жодних меню з налаштуваннями.</p>
-    </div>
-    <div class="modes-grid reveal">
-      <div class="mode-card">
-        <div class="mode-tag">дефолт</div>
-        <h3>Авто</h3>
-        <p>Розмитий фон, авто-стеження за курсором, субтитри без зайвих кліків.</p>
-      </div>
-      <div class="mode-card">
-        <div class="mode-tag">з лицем</div>
-        <h3>Розділений 70/30</h3>
-        <p>Екран зверху, камера знизу — коли хочеш показати реакцію, а не тільки код.</p>
-      </div>
-      <div class="mode-card">
-        <div class="mode-tag">для туторіалів</div>
-        <h3>Фокус</h3>
-        <p>Smart zoom за курсором, авто-розпізнавання зони коду — щоб синтаксис було видно на телефоні.</p>
-      </div>
-      <div class="mode-card">
-        <div class="mode-tag">контроль</div>
-        <h3>Рамка</h3>
-        <p>9:16 overlay ще до запису — для тих, хто любить точно бачити кадр заздалегідь.</p>
-      </div>
-    </div>
-  </div>
-</section>
+  <section class="waitlist" id="waitlist">
+    <div class="wrap">
+      <div class="card">
+        <h2 data-i18n="form_title">Join the waitlist</h2>
+        <p class="lede" data-i18n="form_lede">Be first to try Nimvel.</p>
 
-<section id="honest">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="section-eyebrow">чесно</div>
-      <h2>Для кого це — а для кого ні</h2>
-    </div>
-    <div class="honest reveal">
-      <div class="honest-grid">
-        <div class="not">
-          <h3>Не для тебе, якщо</h3>
-          <ul>
-            <li>Тобі потрібен повноцінний відеоредактор з таймлайном і ефектами</li>
-            <li>Ти знімаєш не код — а подкасти, вебінари чи влоги</li>
-            <li>Хмарне зберігання і командна співпраця важливіші за приватність</li>
-          </ul>
+        <form id="form" action="https://formspree.io/f/mzebleyj" method="POST" novalidate>
+          <div class="field">
+            <label class="label" for="email" data-i18n="label_email">Email</label>
+            <input class="input" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+            <p class="err" id="email-err" data-i18n="err_email">Please enter a valid email address.</p>
+          </div>
+
+          <fieldset class="field">
+            <legend class="label" data-i18n="label_platform">Which platform matters most to you?</legend>
+            <div class="chips">
+              <label class="chip"><input type="checkbox" name="platform" value="Windows" />Windows</label>
+              <label class="chip"><input type="checkbox" name="platform" value="macOS" />macOS</label>
+              <label class="chip"><input type="checkbox" name="platform" value="Linux" />Linux</label>
+              <label class="chip"><input type="checkbox" name="platform" value="iOS" />iOS</label>
+              <label class="chip"><input type="checkbox" name="platform" value="Android" />Android</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="field">
+            <legend class="label" data-i18n="label_obsidian">Do you use Obsidian?</legend>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="obsidian" value="yes" /><span data-i18n="yes">Yes</span></label>
+              <label class="chip"><input type="radio" name="obsidian" value="no" /><span data-i18n="no">No</span></label>
+            </div>
+          </fieldset>
+
+          <!-- context for the inbox -->
+          <input type="hidden" name="_subject" value="Nimvel waitlist signup" />
+          <input type="hidden" name="page_language" id="page_language" value="en" />
+
+          <button class="cta" type="submit" id="submit" data-i18n="form_cta">Join the waitlist</button>
+          <p class="err" id="form-err" data-i18n="err_form">Something went wrong. Please try again in a moment.</p>
+        </form>
+
+        <div class="success" id="success" hidden>
+          <p class="big" data-i18n="ok_big">You're on the list.</p>
+          <p class="small" data-i18n="ok_small">Talk soon.</p>
         </div>
-        <div class="yes">
-          <h3>Для тебе, якщо</h3>
-          <ul>
-            <li>Ти розробник чи технічний автор, що знімає туторіали про код</li>
-            <li>Хочеш від запису до Shorts за хвилини, а не за вечір у CapCut</li>
-            <li>Цінуєш, що все обробляється локально на твоєму ПК</li>
-          </ul>
+
+        <p class="form-note" data-i18n="form_note">We'll only email you about launching Nimvel. No spam, ever.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="wrap">
+      <h2 data-i18n="how_title">How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="num">01</span>
+          <h3 data-i18n="s1_t">Capture on the go</h3>
+          <p data-i18n="s1_d">A thought, a task, an idea — just say it in five seconds.</p>
+        </div>
+        <div class="step">
+          <span class="num">02</span>
+          <h3 data-i18n="s2_t">Local AI does the work</h3>
+          <p data-i18n="s2_d">Speech becomes text right on your device. No cloud, no data leaks.</p>
+        </div>
+        <div class="step">
+          <span class="num">03</span>
+          <h3 data-i18n="s3_t">A ready summary</h3>
+          <p data-i18n="s3_d">Every evening Nimvel groups your notes into a structured journal, ready to export to Obsidian.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<section id="quote">
-  <div class="container">
-    <div class="quote-block reveal">
-      <blockquote>«Записуєш екран — отримуєш готовий Shorts. Все в одному місці, на своєму ПК, без зайвих інструментів.»</blockquote>
-      <div class="by">— з реальних слів першого користувача на валідації</div>
-    </div>
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <a class="brand" href="#" aria-label="Nimvel">
+      <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+        <rect x="2" y="2" width="28" height="28" rx="8" />
+        <path d="M11 20v-4M16 20v-8M21 20v-6" stroke-linecap="round" />
+      </svg>
+      Nimvel
+    </a>
+    <p><span data-i18n="footer">© 2026 Nimvel — your voice never leaves your device.</span> &nbsp;<a href="mailto:hello@nimvel.dev">hello@nimvel.dev</a></p>
   </div>
-</section>
-
-<section class="cta-section" id="waitlist">
-  <div class="container">
-    <div class="reveal">
-      <h2>Хочеш спробувати першим?</h2>
-      <p>Продукт у валідації. Раннім учасникам — перший доступ і вплив на фічі MVP.</p>
-      
-      <form class="email-form" id="waitlistForm" action="https://formspree.io/f/xeaqbezy" method="POST">
-        <input type="email" name="email" placeholder="твоя_пошта@example.com" required>
-        <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">приєднатись</button>
-      </form>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <p>StackShorts © 2026 · record → readable → vertical</p>
 </footer>
 
-<!-- ---------- Modal Component ---------- -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal-content">
-    <div class="modal-icon">✓</div>
-    <h3>Ти в списку!</h3>
-    <p>Дякуємо за інтерес до StackShorts. Ми зв'яжемося з тобою, як тільки підготуємо першу версію для тестування.</p>
-    <button type="button" class="btn-primary" id="modalCloseBtn" style="border:none; cursor:pointer; width: 100%;">чудово</button>
-  </div>
-</div>
-
 <script>
-  // Intersection Observer for scroll animations
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-  }, { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-  // Form handling via AJAX & Modal control
-  const form = document.getElementById('waitlistForm');
-  const modal = document.getElementById('successModal');
-  const closeBtn = document.getElementById('modalCloseBtn');
-  const submitBtn = form.querySelector('button[type="submit"]');
-
-  function openModal() {
-    modal.classList.add('active');
+/* ===================== i18n ===================== */
+var I18N = {
+  en: {
+    title: 'Nimvel — Your private, on-device voice journal',
+    nav_cta: 'Join the waitlist',
+    kicker: 'Private voice journal · Coming soon',
+    h1: 'Capture thoughts by voice. Nimvel shapes them into a clean journal.',
+    sub: 'Leave quick voice notes on the go — they're transcribed on your device and arranged into a tidy summary every evening.',
+    trust: '100% on your device · No cloud · No account · Your words stay yours',
+    form_title: 'Join the waitlist',
+    form_lede: 'Be first to try Nimvel.',
+    label_email: 'Email',
+    ph_email: 'you@example.com',
+    err_email: 'Please enter a valid email address.',
+    err_form: 'Something went wrong. Please try again in a moment.',
+    label_platform: 'Which platform matters most to you?',
+    label_obsidian: 'Do you use Obsidian?',
+    yes: 'Yes',
+    no: 'No',
+    form_cta: 'Join the waitlist',
+    form_cta_busy: 'Joining…',
+    ok_big: "You're on the list.",
+    ok_small: 'Talk soon.',
+    form_note: "We'll only email you about launching Nimvel. No spam, ever.",
+    how_title: 'How it works',
+    s1_t: 'Capture on the go', s1_d: 'A thought, a task, an idea — just say it in five seconds.',
+    s2_t: 'Local AI does the work', s2_d: 'Speech becomes text right on your device. No cloud, no data leaks.',
+    s3_t: 'A ready summary', s3_d: 'Every evening Nimvel groups your notes into a structured journal, ready to export to Obsidian.',
+    footer: '© 2026 Nimvel — your voice never leaves your device.',
+    theme_label: 'Switch theme'
+  },
+  uk: {
+    title: 'Nimvel — приватний голосовий щоденник на вашому пристрої',
+    nav_cta: 'До списку очікування',
+    kicker: 'Приватний голосовий щоденник · Незабаром',
+    h1: 'Фіксуйте думки голосом. Nimvel складає з них чіткий щоденник.',
+    sub: 'Наговорюйте нотатки на ходу — розшифровка відбувається на вашому пристрої, а щовечора з них збирається впорядкований підсумок дня.',
+    trust: '100% на вашому пристрої · Без хмари · Без акаунта · Ваші слова залишаються вашими',
+    form_title: 'Долучитися до списку очікування',
+    form_lede: 'Спробуйте Nimvel першими.',
+    label_email: 'Email',
+    ph_email: 'ваш@email.com',
+    err_email: 'Введіть, будь ласка, коректну email-адресу.',
+    err_form: 'Щось пішло не так. Спробуйте, будь ласка, ще раз за хвилину.',
+    label_platform: 'Яка платформа для вас найважливіша?',
+    label_obsidian: 'Чи користуєтеся ви Obsidian?',
+    yes: 'Так',
+    no: 'Ні',
+    form_cta: 'Долучитися',
+    form_cta_busy: 'Надсилаємо…',
+    ok_big: 'Ви у списку.',
+    ok_small: 'До зв’язку.',
+    form_note: 'Напишемо лише про запуск Nimvel. Жодного спаму.',
+    how_title: 'Як це працює',
+    s1_t: 'Наговорюйте на ходу', s1_d: 'Думка, завдання чи ідея — просто зафіксуйте її голосом за 5 секунд.',
+    s2_t: 'Локальний AI працює', s2_d: 'Мова перетворюється на текст просто на вашому пристрої. Без хмари й витоку даних.',
+    s3_t: 'Готовий підсумок', s3_d: 'Щовечора Nimvel групує голосові нотатки у структурований щоденник — готовий до експорту в Obsidian.',
+    footer: '© 2026 Nimvel — ваш голос не покидає ваш пристрій.',
+    theme_label: 'Змінити тему'
   }
+};
 
-  function closeModal() {
-    modal.classList.remove('active');
+var LANG = 'en';
+
+function applyLang(lang) {
+  LANG = I18N[lang] ? lang : 'en';
+  var t = I18N[LANG];
+
+  document.documentElement.lang = LANG;
+  document.title = t.title;
+
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+
+  document.getElementById('email').placeholder = t.ph_email;
+  document.getElementById('page_language').value = LANG;
+  document.getElementById('theme-toggle').setAttribute('aria-label', t.theme_label);
+
+  document.querySelectorAll('.lang button').forEach(function (b) {
+    b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
+  });
+
+}
+
+document.querySelectorAll('.lang button').forEach(function (b) {
+  b.addEventListener('click', function () { applyLang(b.dataset.lang); });
+});
+
+(function initLang() {
+  var guess = (navigator.language || 'en').toLowerCase().indexOf('uk') === 0 ? 'uk' : 'en';
+  applyLang(guess);
+})();
+
+/* ===================== Theme ===================== */
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById('theme-toggle');
+  var mql = matchMedia('(prefers-color-scheme: dark)');
+  var theme = mql.matches ? 'dark' : 'light';
+
+  function icon(t) {
+    return t === 'dark'
+      ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
   }
+  function set(t) {
+    theme = t;
+    root.setAttribute('data-theme', t);
+    btn.innerHTML = icon(t);
+  }
+  set(theme);
+  btn.addEventListener('click', function () { set(theme === 'dark' ? 'light' : 'dark'); });
+})();
 
-  form.addEventListener('submit', async function(e) {
+/* ===================== Sticky header ===================== */
+(function () {
+  var header = document.getElementById('header');
+  addEventListener('scroll', function () {
+    header.classList.toggle('scrolled', scrollY > 8);
+  }, { passive: true });
+})();
+
+/* ===================== Formspree submit (AJAX) ===================== */
+(function () {
+  var FORM_ENDPOINT = 'https://formspree.io/f/mzebleyj';
+
+  var form = document.getElementById('form');
+  var emailInput = document.getElementById('email');
+  var emailErr = document.getElementById('email-err');
+  var formErr = document.getElementById('form-err');
+  var submit = document.getElementById('submit');
+  var success = document.getElementById('success');
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const originalBtnText = submitBtn.textContent;
-    submitBtn.textContent = 'відправка...';
-    submitBtn.disabled = true;
+    var t = I18N[LANG];
+    formErr.classList.remove('show');
 
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: new FormData(form),
-        headers: {
-          'Accept': 'application/json'
-        }
+    var email = emailInput.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      emailInput.setAttribute('aria-invalid', 'true');
+      emailErr.classList.add('show');
+      emailInput.focus();
+      return;
+    }
+    emailInput.removeAttribute('aria-invalid');
+    emailErr.classList.remove('show');
+
+    var platforms = Array.prototype.map.call(
+      form.querySelectorAll('input[name="platform"]:checked'),
+      function (n) { return n.value; }
+    ).join(', ');
+    var obsidianEl = form.querySelector('input[name="obsidian"]:checked');
+
+    submit.disabled = true;
+    submit.textContent = t.form_cta_busy;
+
+    fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        platform: platforms || '(not answered)',
+        obsidian: obsidianEl ? obsidianEl.value : '(not answered)',
+        page_language: LANG,
+        _subject: 'Nimvel waitlist signup'
+      })
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        form.hidden = true;
+        success.hidden = false;
+      })
+      .catch(function (err) {
+        console.error('[Nimvel] submit failed', err);
+        formErr.textContent = I18N[LANG].err_form;
+        formErr.classList.add('show');
+        submit.disabled = false;
+        submit.textContent = I18N[LANG].form_cta;
       });
-
-      if (response.ok) {
-        form.reset();
-        openModal();
-      } else {
-        alert('Сталася помилка при відправці. Будь ласка, спробуйте ще раз.');
-      }
-    } catch (error) {
-      alert('Мережева помилка. Перевірте з’єднання та спробуйте ще раз.');
-    } finally {
-      submitBtn.textContent = originalBtnText;
-      submitBtn.disabled = false;
-    }
   });
-
-  closeBtn.addEventListener('click', closeModal);
-
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-      closeModal();
-    }
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.classList.contains('active')) {
-      closeModal();
-    }
-  });
+})();
 </script>
-
 </body>
 </html>
