@@ -170,7 +170,7 @@
   }
   .btn-secondary:hover { border-color: var(--text-faint); color: var(--text); }
 
-  /* ---------- Pipeline visual (signature element) ---------- */
+  /* ---------- Pipeline visual ---------- */
   .pipeline {
     display: flex;
     align-items: center;
@@ -326,7 +326,7 @@
     color: var(--text-faint);
   }
 
-  /* ---------- CTA ---------- */
+  /* ---------- CTA & Form ---------- */
   .cta-section {
     text-align: center;
     border-top: 1px solid var(--border);
@@ -356,6 +356,66 @@
   .email-form input:focus { outline: none; border-color: var(--cyan); }
   .email-form input::placeholder { color: var(--text-faint); }
 
+  /* ---------- Modal Window ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 20, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 24px;
+  }
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--cyan-dim);
+    box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+    border-radius: 16px;
+    padding: 40px 32px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .modal-overlay.active .modal-content {
+    transform: scale(1) translateY(0);
+  }
+  .modal-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--cyan-bg);
+    border: 1px solid var(--cyan-dim);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--cyan);
+    font-size: 20px;
+  }
+  .modal-content h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .modal-content p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
   /* ---------- Footer ---------- */
   footer {
     border-top: 1px solid var(--border);
@@ -374,6 +434,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
+    .modal-overlay, .modal-content { transition: none; }
     html { scroll-behavior: auto; }
   }
 </style>
@@ -529,8 +590,9 @@
     <div class="reveal">
       <h2>Хочеш спробувати першим?</h2>
       <p>Продукт у валідації. Раннім учасникам — перший доступ і вплив на фічі MVP.</p>
-      <form class="email-form" onsubmit="event.preventDefault(); this.querySelector('input').value=''; this.querySelector('button').textContent='дякую, на звʼязку →';">
-        <input type="email" placeholder="твоя_пошта@example.com" required>
+      
+      <form class="email-form" id="waitlistForm" action="https://formspree.io/f/xeaqbezy" method="POST">
+        <input type="email" name="email" placeholder="твоя_пошта@example.com" required>
         <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">приєднатись</button>
       </form>
     </div>
@@ -541,11 +603,79 @@
   <p>StackShorts © 2026 · record → readable → vertical</p>
 </footer>
 
+<!-- ---------- Modal Component ---------- -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal-content">
+    <div class="modal-icon">✓</div>
+    <h3>Ти в списку!</h3>
+    <p>Дякуємо за інтерес до StackShorts. Ми зв'яжемося з тобою, як тільки підготуємо першу версію для тестування.</p>
+    <button type="button" class="btn-primary" id="modalCloseBtn" style="border:none; cursor:pointer; width: 100%;">чудово</button>
+  </div>
+</div>
+
 <script>
+  // Intersection Observer for scroll animations
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form handling via AJAX & Modal control
+  const form = document.getElementById('waitlistForm');
+  const modal = document.getElementById('successModal');
+  const closeBtn = document.getElementById('modalCloseBtn');
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  function openModal() {
+    modal.classList.add('active');
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = 'відправка...';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        form.reset();
+        openModal();
+      } else {
+        alert('Сталася помилка при відправці. Будь ласка, спробуйте ще раз.');
+      }
+    } catch (error) {
+      alert('Мережева помилка. Перевірте з’єднання та спробуйте ще раз.');
+    } finally {
+      submitBtn.textContent = originalBtnText;
+      submitBtn.disabled = false;
+    }
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
 </script>
 
 </body>
